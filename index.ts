@@ -52,7 +52,12 @@ app.get('/releases', (req, res) => {
 app.get('/releases/:file', (req, res, next) => {
   res.setHeader('Accept-Ranges', 'bytes');
 
-  const filename = req.params.file;
+  let filename = req.params.file;
+  if (filename === 'latest') {
+    const versions = caches.get('releases') ?? [];
+    filename = versions[versions.length - 1];
+  }
+
   if (!filename) return res.status(400).json({
     message: 'Invalid filename',
     code: 400
