@@ -76,20 +76,23 @@ app.get('/releases/:file', (req, res, next) => {
   
   let range: any = req.get('Range');
   if (range) {
-    let tempRange = range.split('=');
-    if (tempRange[0] !== 'bytes') return res.status(406).json({
-      message: 'Only accepts bytes range',
-      code: 406
-    });
-    
-    const [start, end] = tempRange[1]?.split('-').map((s: string) => parseInt(s)).map((v: number) => isNaN(v) ? Infinity : v) as [number, number];
-    
-    if ((end !== Infinity && end < start) || start > check.size || (end !== Infinity && end > check.size) || start < 0) return res.status(406).json({
-      message: 'Out of range',
-      code: 406
-    });
-    
-    range = { start, end };
+    if (range === '*') range = undefined;
+    else {
+      let tempRange = range.split('=');
+      if (tempRange[0] !== 'bytes') return res.status(406).json({
+        message: 'Only accepts bytes range',
+        code: 406
+      });
+      
+      const [start, end] = tempRange[1]?.split('-').map((s: string) => parseInt(s)).map((v: number) => isNaN(v) ? Infinity : v) as [number, number];
+      
+      if ((end !== Infinity && end < start) || start > check.size || (end !== Infinity && end > check.size) || start < 0) return res.status(406).json({
+        message: 'Out of range',
+        code: 406
+      });
+      
+      range = { start, end };
+    }
   }
 
   res.setHeader('Content-Length', range ? (range.end === Infinity ? check.size : range.end) - range.start : check.size);
