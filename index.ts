@@ -86,9 +86,9 @@ app.get('/releases/:file', (req, res, next) => {
       
       const [start, end] = tempRange[1]?.split('-').map((s: string) => parseInt(s)).map((v: number) => isNaN(v) ? Infinity : v) as [number, number];
       
-      if ((end !== Infinity && end < start) || start > check.size || (end !== Infinity && end > check.size) || start < 0) return res.status(406).json({
+      if ((end !== Infinity && end < start) || start > check.size || (end !== Infinity && end > check.size) || start < 0) return res.status(416).json({
         message: 'Out of range',
-        code: 406
+        code: 416
       });
       
       range = { start, end };
